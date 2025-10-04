@@ -1,15 +1,16 @@
 package lexer
 
 import (
-	"github.com/guruorgoru/goru-verbal-interpreter/token"
 	"testing"
+
+	"github.com/guruorgoru/goru-verbal-interpreter/token"
 )
 
 func TestNextToken(T *testing.T) {
 	input := `+=(){};,`
 	tests := []struct {
-	  expectedType  token.TokenType
-	  expectedLiteral string
+		expectedType    token.TokenType
+		expectedLiteral string
 	}{
 		{token.PLUS, "+"},
 		{token.ASSIGN, "="},
@@ -17,8 +18,8 @@ func TestNextToken(T *testing.T) {
 		{token.RIGHTPARENTHESIS, ")"},
 		{token.LEFTBRACES, "{"},
 		{token.RIGHTBRACES, "}"},
-		{token.COMMA, ","},
 		{token.SEMICOLON, ";"},
+		{token.COMMA, ","},
 		{token.EOF, ""},
 	}
 
