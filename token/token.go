@@ -16,9 +16,17 @@ const (
 
 	PLUS = "+"
 	ASSIGN = "="
+	BANG = "!"
+	MINUS = "-"
+	ASTERISK = "*"
+	SLASH = "/"
 
 	COMMA = ","
 	SEMICOLON = ";"
+	LESSERTHAN = "<"
+	GREATERTHAN = ">"
+	EQUALS = "=="
+	NOTEQUALS = "!="
 
 	LEFTPARENTHESIS = "("
 	RIGHTPARENTHESIS = ")"
@@ -27,4 +35,26 @@ const (
 
 	FUNCTION = "FUNCTION"
 	LET = "LET"
+	IF = "IF"
+	ELSE = "ELSE"
+	TRUE = "TRUE"
+	FALSE = "FALSE"
+	RETURN = "RETURN"
 )
+
+var keywords = map[string]TokenType{
+	"karya": FUNCTION,
+	"manau": LET,
+	"yadi": IF,
+	"natra": ELSE,
+	"satya": TRUE,
+	"jhuth": FALSE,
+	"firtade": RETURN,
+}
+
+func LookForIdentifier(identifier string) TokenType {
+	if tok, ok := keywords[identifier]; ok {
+		return tok
+	}
+	return IDENTIFIER
+}

@@ -14,6 +14,18 @@ func TestNextToken(T *testing.T) {
 		x + y;
 	}
 
+	!-/*5;
+	<>
+
+	yadi (5 < 10) {
+		firtade satya;
+	} natra {
+		firtade jhuth;
+	}
+
+	10 == 10;
+	10 != 69
+
 	manau result = add(a, b)
 	`
 	tests := []struct {
@@ -50,6 +62,47 @@ func TestNextToken(T *testing.T) {
 		{token.IDENTIFIER, "y"},
 		{token.SEMICOLON, ";"},
 		{token.RIGHTBRACES, "}"},
+
+		// !-/*5;
+		{token.BANG, "!"},
+		{token.MINUS, "-"},
+		{token.SLASH, "/"},
+		{token.ASTERISK, "*"},
+		{token.INT, "5"},
+		{token.SEMICOLON, ";"},
+		// <>
+		{token.LESSERTHAN, "<"},
+		{token.GREATERTHAN, ">"},
+
+		// yadi (5 < 10) { firtade satya; } natra { firtade jhuth; }
+		{token.IF, "yadi"},
+		{token.LEFTPARENTHESIS, "("},
+		{token.INT, "5"},
+		{token.LESSERTHAN, "<"},
+		{token.INT, "10"},
+		{token.RIGHTPARENTHESIS, ")"},
+		{token.LEFTBRACES, "{"},
+		{token.RETURN, "firtade"},
+		{token.TRUE, "satya"},
+		{token.SEMICOLON, ";"},
+		{token.RIGHTBRACES, "}"},
+		{token.ELSE, "natra"},
+		{token.LEFTBRACES, "{"},
+		{token.RETURN, "firtade"},
+		{token.FALSE, "jhuth"},
+		{token.SEMICOLON, ";"},
+		{token.RIGHTBRACES, "}"},
+
+		// 10 == 10;
+		{token.INT, "10"},
+		{token.EQUALS, "=="},
+		{token.INT, "10"},
+		{token.SEMICOLON, ";"},
+
+		// 10 != 69
+		{token.INT, "10"},
+		{token.NOTEQUALS, "!="},
+		{token.INT, "69"},
 
 		// manau result = add(a, b)
 		{token.LET, "manau"},
