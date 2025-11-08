@@ -40,7 +40,9 @@ const (
 	TRUE = "TRUE"
 	FALSE = "FALSE"
 	RETURN = "RETURN"
-)
+) 
+
+// Keywords contains the keywords usable in that langauge
 
 var keywords = map[string]TokenType{
 	"karya": FUNCTION,
