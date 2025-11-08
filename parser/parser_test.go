@@ -11,7 +11,7 @@ func TestLetStatement(t *testing.T) {
 	input := `
 	manau x = 69;
 	manau y = 420;
-	manau foobar  42069;
+	manau foobar  = 42069;
 	`
 
 	lex := lexer.New(input)
@@ -49,6 +49,35 @@ func TestLetStatement(t *testing.T) {
 			t.Fatalf("letStmt.Name.Value not '%s'. got=%s", tt.expectedIdentifier, letStmt.Name.Value)
 		}
 
+	}
+}
+
+func TestReturnStatement(t *testing.T) {
+	input := `
+	firta 5;
+	firta 10;
+	firta 993322;
+	`
+	lex := lexer.New(input)
+	parser := New(lex)
+
+	program := parser.ParseProgram()
+	checkParserErrors(t, parser)
+
+	if len(program.Statements) != 3 {
+		t.Fatalf("program.Statements does not contain 3 statements. got=%d", len(program.Statements))
+	}
+
+	for _, statement := range program.Statements {
+		returnStatement, ok := statement.(*ast.ReturnStatement)
+		if !ok {
+			t.Errorf("stmt not *ast.returnStatement. got=%T", statement)
+			continue
+		}
+
+		if returnStatement.TokenLiteral() != "firta" {
+			t.Errorf("returnStmt.TokenLiteral not 'firta', got %q", statement.TokenLiteral())
+		}
 	}
 }
 

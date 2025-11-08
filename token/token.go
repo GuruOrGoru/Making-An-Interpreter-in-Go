@@ -51,7 +51,7 @@ var keywords = map[string]TokenType{
 	"natra": ELSE,
 	"satya": TRUE,
 	"jhuth": FALSE,
-	"firtade": RETURN,
+	"firta": RETURN,
 }
 
 func LookForIdentifier(identifier string) TokenType {

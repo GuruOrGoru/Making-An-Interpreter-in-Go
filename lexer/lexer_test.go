@@ -18,9 +18,9 @@ func TestNextToken(T *testing.T) {
 	<>
 
 	yadi (5 < 10) {
-		firtade satya;
+		firta satya;
 	} natra {
-		firtade jhuth;
+		firta jhuth;
 	}
 
 	10 == 10;
@@ -74,7 +74,7 @@ func TestNextToken(T *testing.T) {
 		{token.LESSERTHAN, "<"},
 		{token.GREATERTHAN, ">"},
 
-		// yadi (5 < 10) { firtade satya; } natra { firtade jhuth; }
+		// yadi (5 < 10) { firta satya; } natra { firta jhuth; }
 		{token.IF, "yadi"},
 		{token.LEFTPARENTHESIS, "("},
 		{token.INT, "5"},
@@ -82,13 +82,13 @@ func TestNextToken(T *testing.T) {
 		{token.INT, "10"},
 		{token.RIGHTPARENTHESIS, ")"},
 		{token.LEFTBRACES, "{"},
-		{token.RETURN, "firtade"},
+		{token.RETURN, "firta"},
 		{token.TRUE, "satya"},
 		{token.SEMICOLON, ";"},
 		{token.RIGHTBRACES, "}"},
 		{token.ELSE, "natra"},
 		{token.LEFTBRACES, "{"},
-		{token.RETURN, "firtade"},
+		{token.RETURN, "firta"},
 		{token.FALSE, "jhuth"},
 		{token.SEMICOLON, ";"},
 		{token.RIGHTBRACES, "}"},
