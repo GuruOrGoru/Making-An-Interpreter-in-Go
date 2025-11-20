@@ -220,6 +220,26 @@ func (bs *BlockStatement) String() string {
 	return out.String()
 }
 
+// Block expression
+
+type BlockExpression struct {
+	Token      token.Token
+	Statements []Statement
+}
+
+func (be *BlockExpression) expressionNode()      {}
+func (be *BlockExpression) TokenLiteral() string { return be.Token.Literal }
+
+func (be *BlockExpression) String() string {
+	var out bytes.Buffer
+
+	for _, statement := range be.Statements {
+		out.WriteString(statement.String())
+	}
+
+	return out.String()
+}
+
 // If statement
 
 type IfStatement struct {
@@ -243,6 +263,34 @@ func (is *IfStatement) String() string {
 	if is.Alternative != nil {
 		out.WriteString("else ")
 		out.WriteString(is.Alternative.String())
+	}
+
+	return out.String()
+}
+
+// If expression
+
+type IfExpression struct {
+	Token       token.Token
+	Condition   Expression
+	Consequence Expression
+	Alternative Expression
+}
+
+func (ie *IfExpression) expressionNode()      {}
+func (ie *IfExpression) TokenLiteral() string { return ie.Token.Literal }
+
+func (ie *IfExpression) String() string {
+	var out bytes.Buffer
+
+	out.WriteString("if")
+	out.WriteString(ie.Condition.String())
+	out.WriteString(" ")
+	out.WriteString(ie.Consequence.String())
+
+	if ie.Alternative != nil {
+		out.WriteString("else ")
+		out.WriteString(ie.Alternative.String())
 	}
 
 	return out.String()

@@ -71,6 +71,7 @@ func New(lexer *lexer.Lexer) *Parser {
 	p.registerPrefix(token.TRUE, p.parseBoolean)
 	p.registerPrefix(token.FALSE, p.parseBoolean)
 	p.registerPrefix(token.LEFTPARENTHESIS, p.parseGroupedExpression)
+	p.registerPrefix(token.IF, p.parseIfExpression)
 
 	p.infixParseFuncs = make(map[token.TokenType]infixParseFunc)
 	p.registerInfix(token.PLUS, p.parseInfixExpression)
@@ -161,6 +162,8 @@ func (p *Parser) ParseStatement() ast.Statement {
 		return p.parseReturnStatement()
 	case token.IF:
 		return p.parseIfStatement()
+	case token.SEMICOLON:
+		return nil
 	default:
 		return p.parseExpressionStatement()
 	}
@@ -321,6 +324,39 @@ func (p *Parser) parseIfStatement() *ast.IfStatement {
 	return statement
 }
 
+func (p *Parser) parseIfExpression() ast.Expression {
+	expression := &ast.IfExpression{Token: p.currentToken}
+
+	if !p.expectNextToken(token.LEFTPARENTHESIS) {
+		return nil
+	}
+
+	p.readNextToken()
+	expression.Condition = p.parseExpression(LOWEST)
+
+	if !p.expectNextToken(token.RIGHTPARENTHESIS) {
+		return nil
+	}
+
+	if !p.expectNextToken(token.LEFTBRACES) {
+		return nil
+	}
+
+	expression.Consequence = p.parseBlockExpression()
+
+	if p.nextToken.Type == token.ELSE {
+		p.readNextToken()
+
+		if !p.expectNextToken(token.LEFTBRACES) {
+			return nil
+		}
+
+		expression.Alternative = p.parseBlockExpression()
+	}
+
+	return expression
+}
+
 func (p *Parser) parseBlockStatement() *ast.BlockStatement {
 	block := &ast.BlockStatement{Token: p.currentToken}
 	block.Statements = []ast.Statement{}
@@ -337,3 +373,22 @@ func (p *Parser) parseBlockStatement() *ast.BlockStatement {
 
 	return block
 }
+
+func (p *Parser) parseBlockExpression() ast.Expression {
+	block := &ast.BlockExpression{Token: p.currentToken}
+	block.Statements = []ast.Statement{}
+
+	p.readNextToken()
+
+	for !p.currentTokenIs(token.RIGHTBRACES) && !p.currentTokenIs(token.EOF) {
+		statement := p.ParseStatement()
+		if statement != nil {
+			block.Statements = append(block.Statements, statement)
+		}
+		p.readNextToken()
+	}
+
+	return block
+}
+
+// Too long file, sorry :)

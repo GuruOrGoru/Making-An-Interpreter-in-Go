@@ -9,45 +9,45 @@ type Token struct {
 
 const (
 	ILLEGAL = "ILLEGAL"
-	EOF = "EOF"
+	EOF     = "EOF"
 
-	IDENTIFIER =  "IDENTIFIER"
-	INT = "INT"
+	IDENTIFIER = "IDENTIFIER"
+	INT        = "INT"
 
-	PLUS = "+"
-	ASSIGN = "="
-	BANG = "!"
-	MINUS = "-"
+	PLUS     = "+"
+	ASSIGN   = "="
+	BANG     = "!"
+	MINUS    = "-"
 	ASTERISK = "*"
-	SLASH = "/"
+	SLASH    = "/"
 
-	COMMA = ","
-	SEMICOLON = ";"
-	LESSERTHAN = "<"
+	COMMA       = ","
+	SEMICOLON   = ";"
+	LESSERTHAN  = "<"
 	GREATERTHAN = ">"
-	EQUALS = "=="
-	NOTEQUALS = "!="
+	EQUALS      = "=="
+	NOTEQUALS   = "!="
 
-	LEFTPARENTHESIS = "("
+	LEFTPARENTHESIS  = "("
 	RIGHTPARENTHESIS = ")"
-	LEFTBRACES = "{"
-	RIGHTBRACES = "}"
+	LEFTBRACES       = "{"
+	RIGHTBRACES      = "}"
 
 	FUNCTION = "FUNCTION"
-	LET = "LET"
-	IF = "IF"
-	ELSE = "ELSE"
-	TRUE = "TRUE"
-	FALSE = "FALSE"
-	RETURN = "RETURN"
-) 
+	LET      = "LET"
+	IF       = "IF"
+	ELSE     = "ELSE"
+	TRUE     = "TRUE"
+	FALSE    = "FALSE"
+	RETURN   = "RETURN"
+)
 
 // Keywords contains the keywords usable in that langauge
 
 var keywords = map[string]TokenType{
 	"karya": FUNCTION,
 	"manau": LET,
-	"yadi": IF,
+	"yadi":  IF,
 	"natra": ELSE,
 	"satya": TRUE,
 	"jhuth": FALSE,

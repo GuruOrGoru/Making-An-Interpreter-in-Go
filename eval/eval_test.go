@@ -75,8 +75,8 @@ func TestIfElseExpressions(t *testing.T) {
 		{"yadi (1) { 10 }", 10},
 		{"yadi (1 < 2) { 10 }", 10},
 		{"yadi (1 > 2) { 10 }", nil},
-		{"yadi (1 > 2) { 10 } natra { 20 }", 20},
-		{"yadi (1 < 2) { 10 } natra { 20 }", 10},
+		{"yadi (1 > 2) { 10 } else { 20 }", 20},
+		{"yadi (1 < 2) { 10 } else { 20 }", 10},
 	}
 
 	for _, tt := range tests {
@@ -106,6 +106,22 @@ func TestReturnStatements(t *testing.T) {
 	}
 }
 
+func TestLetStatement(t *testing.T) {
+	tests := []struct {
+		input    string
+		expected int64
+	}{
+		{"manau a = 5; a;", 5},
+		{"manau a = 5 * 5; a;", 25},
+		{"manau a = 5; manau b = a; b;", 5},
+		{"manau a = 5; manau b = a; manau c = a + b + 5; c;", 15},
+	}
+
+	for _, tt := range tests {
+		testDeezInts(t, testEval(tt.input), tt.expected)
+	}
+}
+
 func testEval(input string) object.Object {
 	l := lexer.New(input)
 	p := parser.New(l)
@@ -115,7 +131,7 @@ func testEval(input string) object.Object {
 		panic(fmt.Sprintf("parser errors: %v", p.Errors()))
 	}
 
-	return Eval(program)
+	return Eval(program, object.NewEnvironment())
 }
 
 func testDeezInts(t *testing.T, obj object.Object, expected int64) bool {
@@ -156,4 +172,64 @@ func testDeezNulls(t *testing.T, obj object.Object) bool {
 		return false
 	}
 	return true
+}
+
+func TestErrorHandling(t *testing.T) {
+	tests := []struct {
+		input           string
+		expectedMessage string
+	}{
+		{
+			"5 + satya;",
+			"type mismatch: INTEGER + BOOLEAN",
+		},
+		{
+			"5 + satya; 5;",
+			"type mismatch: INTEGER + BOOLEAN",
+		},
+		{
+			"-satya",
+			"unknown operator: -BOOLEAN",
+		},
+		{
+			"satya + jhuth;",
+			"unknown operator: BOOLEAN + BOOLEAN",
+		},
+		{
+			"5; satya + jhuth; 5",
+			"unknown operator: BOOLEAN + BOOLEAN",
+		},
+		{
+			"yadi (10 > 1) { satya + jhuth; }",
+			"unknown operator: BOOLEAN + BOOLEAN",
+		},
+		{
+			`
+yadi (10 > 1) {
+yadi (10 > 1) {
+firta satya + jhuth;
+}
+firta 1;
+}
+`,
+			"unknown operator: BOOLEAN + BOOLEAN",
+		},
+		{
+			"foobar",
+			"identifier not found: foobar",
+		},
+	}
+	for _, tt := range tests {
+		evaluated := testEval(tt.input)
+		errObj, ok := evaluated.(*object.Error)
+		if !ok {
+			t.Errorf("no error object returned. got=%T(%+v)",
+				evaluated, evaluated)
+			continue
+		}
+		if errObj.Message != tt.expectedMessage {
+			t.Errorf("wrong error message. expected=%q, got=%q",
+				tt.expectedMessage, errObj.Message)
+		}
+	}
 }

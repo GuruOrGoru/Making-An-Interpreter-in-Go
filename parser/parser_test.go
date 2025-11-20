@@ -393,3 +393,5 @@ func testInfixExpression(t *testing.T, exp ast.Expression, left any,
 	}
 	return true
 }
+
+// I write good tests good

@@ -9,6 +9,7 @@ import (
 
 	"github.com/guruorgoru/goru-verbal-interpreter/eval"
 	"github.com/guruorgoru/goru-verbal-interpreter/lexer"
+	"github.com/guruorgoru/goru-verbal-interpreter/object"
 	"github.com/guruorgoru/goru-verbal-interpreter/parser"
 )
 
@@ -20,6 +21,7 @@ const (
 
 func main() {
 	reader := bufio.NewReader(os.Stdin)
+	env := object.NewEnvironment()
 	for {
 		fmt.Print(PROMPT)
 		input, _ := reader.ReadString('\n')
@@ -31,7 +33,7 @@ func main() {
 		case HELP:
 			fmt.Println("Available commands:")
 			fmt.Println("  help       - Show this help message")
-			fmt.Println("  exit       - Exit the Pokedex")
+			fmt.Println("  exit       - Exit the interpreter")
 		default:
 			l := lexer.New(input)
 			p := parser.New(l)
@@ -42,7 +44,7 @@ func main() {
 				continue
 			}
 
-			evaluated := eval.Eval(program)
+			evaluated := eval.Eval(program, env)
 			if evaluated != nil {
 				fmt.Println(evaluated.Inspect())
 			}

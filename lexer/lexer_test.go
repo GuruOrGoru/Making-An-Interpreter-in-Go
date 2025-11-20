@@ -19,7 +19,7 @@ func TestNextToken(T *testing.T) {
 
 	yadi (5 < 10) {
 		firta satya;
-	} natra {
+	} else {
 		firta jhuth;
 	}
 
@@ -86,7 +86,7 @@ func TestNextToken(T *testing.T) {
 		{token.TRUE, "satya"},
 		{token.SEMICOLON, ";"},
 		{token.RIGHTBRACES, "}"},
-		{token.ELSE, "natra"},
+		{token.ELSE, "else"},
 		{token.LEFTBRACES, "{"},
 		{token.RETURN, "firta"},
 		{token.FALSE, "jhuth"},
