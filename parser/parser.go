@@ -70,6 +70,7 @@ func New(lexer *lexer.Lexer) *Parser {
 	p.registerPrefix(token.MINUS, p.parsePrefixExpression)
 	p.registerPrefix(token.TRUE, p.parseBoolean)
 	p.registerPrefix(token.FALSE, p.parseBoolean)
+	p.registerPrefix(token.LEFTPARENTHESIS, p.parseGroupedExpression)
 
 	p.infixParseFuncs = make(map[token.TokenType]infixParseFunc)
 	p.registerInfix(token.PLUS, p.parseInfixExpression)
@@ -116,7 +117,6 @@ func (p *Parser) parseInfixExpression(left ast.Expression) ast.Expression {
 	return expression
 }
 
-
 func (p *Parser) readNextToken() {
 	p.currentToken = p.nextToken
 	p.nextToken = p.lexer.NextToken()
@@ -159,6 +159,8 @@ func (p *Parser) ParseStatement() ast.Statement {
 		return p.parseLetStatement()
 	case token.RETURN:
 		return p.parseReturnStatement()
+	case token.IF:
+		return p.parseIfStatement()
 	default:
 		return p.parseExpressionStatement()
 	}
@@ -177,7 +179,10 @@ func (p *Parser) parseLetStatement() *ast.LetStatement {
 		return nil
 	}
 
-	for !p.currentTokenIs(token.SEMICOLON) {
+	p.readNextToken()
+	stmt.Value = p.parseExpression(LOWEST)
+
+	if p.nextToken.Type == token.SEMICOLON {
 		p.readNextToken()
 	}
 
@@ -202,7 +207,11 @@ func (p *Parser) parseReturnStatement() *ast.ReturnStatement {
 
 	p.readNextToken()
 
-	for !p.currentTokenIs(token.SEMICOLON) {
+	if !p.currentTokenIs(token.SEMICOLON) {
+		statement.ReturnValue = p.parseExpression(LOWEST)
+	}
+
+	if p.nextToken.Type == token.SEMICOLON {
 		p.readNextToken()
 	}
 
@@ -249,6 +258,18 @@ func (p *Parser) parseBoolean() ast.Expression {
 	return &ast.Boolean{Token: p.currentToken, Value: p.currentTokenIs(token.TRUE)}
 }
 
+func (p *Parser) parseGroupedExpression() ast.Expression {
+	p.readNextToken()
+
+	exp := p.parseExpression(LOWEST)
+
+	if !p.expectNextToken(token.RIGHTPARENTHESIS) {
+		return nil
+	}
+
+	return exp
+}
+
 func (p *Parser) expectNextToken(t token.TokenType) bool {
 	if p.nextToken.Type == t {
 		p.readNextToken()
@@ -265,4 +286,54 @@ func (p *Parser) currentTokenIs(t token.TokenType) bool {
 func (p *Parser) peekError(t token.TokenType) {
 	msg := "expected next token to be %s, got %s instead"
 	p.errors = append(p.errors, fmt.Sprintf(msg, t, p.nextToken.Type))
+}
+
+func (p *Parser) parseIfStatement() *ast.IfStatement {
+	statement := &ast.IfStatement{Token: p.currentToken}
+
+	if !p.expectNextToken(token.LEFTPARENTHESIS) {
+		return nil
+	}
+
+	p.readNextToken()
+	statement.Condition = p.parseExpression(LOWEST)
+
+	if !p.expectNextToken(token.RIGHTPARENTHESIS) {
+		return nil
+	}
+
+	if !p.expectNextToken(token.LEFTBRACES) {
+		return nil
+	}
+
+	statement.Consequence = p.parseBlockStatement()
+
+	if p.nextToken.Type == token.ELSE {
+		p.readNextToken()
+
+		if !p.expectNextToken(token.LEFTBRACES) {
+			return nil
+		}
+
+		statement.Alternative = p.parseBlockStatement()
+	}
+
+	return statement
+}
+
+func (p *Parser) parseBlockStatement() *ast.BlockStatement {
+	block := &ast.BlockStatement{Token: p.currentToken}
+	block.Statements = []ast.Statement{}
+
+	p.readNextToken()
+
+	for !p.currentTokenIs(token.RIGHTBRACES) && !p.currentTokenIs(token.EOF) {
+		statement := p.ParseStatement()
+		if statement != nil {
+			block.Statements = append(block.Statements, statement)
+		}
+		p.readNextToken()
+	}
+
+	return block
 }

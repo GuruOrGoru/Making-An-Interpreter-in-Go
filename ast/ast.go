@@ -153,12 +153,12 @@ func (pe *PrefixExpression) TokenLiteral() string {
 
 func (pe *PrefixExpression) String() string {
 	var out bytes.Buffer
-	
+
 	out.WriteString("(")
 	out.WriteString(pe.Operator)
 	out.WriteString(pe.Right.String())
 	out.WriteString(")") // (!<expression-string>)
-	
+
 	return out.String()
 }
 
@@ -198,4 +198,52 @@ func (b *Boolean) TokenLiteral() string { return b.Token.Literal }
 
 func (b *Boolean) String() string {
 	return b.Token.Literal
+}
+
+// Block statement
+
+type BlockStatement struct {
+	Token      token.Token
+	Statements []Statement
+}
+
+func (bs *BlockStatement) statementNode()       {}
+func (bs *BlockStatement) TokenLiteral() string { return bs.Token.Literal }
+
+func (bs *BlockStatement) String() string {
+	var out bytes.Buffer
+
+	for _, statement := range bs.Statements {
+		out.WriteString(statement.String())
+	}
+
+	return out.String()
+}
+
+// If statement
+
+type IfStatement struct {
+	Token       token.Token
+	Condition   Expression
+	Consequence *BlockStatement
+	Alternative *BlockStatement
+}
+
+func (is *IfStatement) statementNode()       {}
+func (is *IfStatement) TokenLiteral() string { return is.Token.Literal }
+
+func (is *IfStatement) String() string {
+	var out bytes.Buffer
+
+	out.WriteString("if")
+	out.WriteString(is.Condition.String())
+	out.WriteString(" ")
+	out.WriteString(is.Consequence.String())
+
+	if is.Alternative != nil {
+		out.WriteString("else ")
+		out.WriteString(is.Alternative.String())
+	}
+
+	return out.String()
 }

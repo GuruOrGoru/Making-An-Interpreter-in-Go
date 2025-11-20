@@ -3,11 +3,13 @@ package main
 import (
 	"bufio"
 	"fmt"
+	"log"
 	"os"
 	"strings"
 
+	"github.com/guruorgoru/goru-verbal-interpreter/eval"
 	"github.com/guruorgoru/goru-verbal-interpreter/lexer"
-	"github.com/guruorgoru/goru-verbal-interpreter/token"
+	"github.com/guruorgoru/goru-verbal-interpreter/parser"
 )
 
 const (
@@ -24,7 +26,7 @@ func main() {
 		input = strings.TrimSpace(input)
 		switch input {
 		case EXIT:
-			fmt.Println("Exiting Pokedex. Goodbye!")
+			fmt.Println("Exiting interpreter. Goodbye!")
 			os.Exit(0)
 		case HELP:
 			fmt.Println("Available commands:")
@@ -32,8 +34,17 @@ func main() {
 			fmt.Println("  exit       - Exit the Pokedex")
 		default:
 			l := lexer.New(input)
-			for tok := l.NextToken(); tok.Type != token.EOF; tok = l.NextToken() {
-				fmt.Printf("%+v\n", tok)
+			p := parser.New(l)
+
+			program := p.ParseProgram()
+			if len(p.Errors()) != 0 {
+				log.Println(p.Errors())
+				continue
+			}
+
+			evaluated := eval.Eval(program)
+			if evaluated != nil {
+				fmt.Println(evaluated.Inspect())
 			}
 		}
 

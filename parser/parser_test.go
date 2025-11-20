@@ -168,7 +168,7 @@ func TestParsingInfixExpression(t *testing.T) {
 	}
 }
 
-func (p *Parser) TestOperatorPrecedenceParsing(t *testing.T) {
+func TestOperatorPrecedenceParsing(t *testing.T) {
 	tests := []struct {
 		input    string
 		expected string
